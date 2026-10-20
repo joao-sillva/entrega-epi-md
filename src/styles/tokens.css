@@ -1,0 +1,22 @@
+/* Design tokens: colors and shared values used across the whole interface. */
+:root {
+  --color-background: #faf8f6;
+  --color-surface: #fff;
+  --color-text: #26211f;
+  --color-muted: #6b5d55;
+  --color-accent: #ac1a24;
+  --color-accent-dark: #8a1019;
+  --color-accent-soft: #f4efeb;
+  --color-border: #ece5e0;
+  --color-danger: #ac1a24;
+  --color-danger-soft: #fbecec;
+  --color-error-text: #c0392b;
+  --color-warning: #b45309;
+  --color-warning-soft: #fff3e0;
+  --color-warning-border: #f1d3a6;
+  --color-success: #2e7d4f;
+  --color-success-soft: #e8f3ec;
+  --color-ink-soft: #5a4a42;
+
+  color-scheme: light;
+}

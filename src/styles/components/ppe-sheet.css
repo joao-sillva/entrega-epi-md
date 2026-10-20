@@ -1,0 +1,268 @@
+/* PPE distribution sheet (FORM. 87/3): on-screen dialog and print layout. */
+#sheet-dialog {
+  width: min(96vw, 780px);
+  background: #f1f1f4;
+}
+
+.sheet-scaler {
+  overflow: hidden;
+}
+
+.sheet-scroll {
+  overflow-x: auto;
+}
+
+.ppe-sheet {
+  background: #fff;
+  color: #111;
+  font: 13px/1.35 Arial, Helvetica, sans-serif;
+  padding: 14px;
+}
+
+.ppe-sheet__frame {
+  border: 2px solid #222;
+}
+
+.ppe-sheet__header {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  border-bottom: 2px solid #222;
+}
+
+.ppe-sheet__logo {
+  border-right: 2px solid #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.ppe-sheet__logo img {
+  height: 52px;
+  max-height: 54px;
+  max-width: 100%;
+}
+
+.ppe-sheet__title {
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ppe-sheet__title b {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+
+.ppe-sheet__title span {
+  font-size: 15px;
+}
+
+.ppe-sheet__fields {
+  padding: 16px 12px 4px;
+}
+
+.ppe-sheet__field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.ppe-sheet__label {
+  white-space: nowrap;
+}
+
+.ppe-sheet__value {
+  flex: 1;
+  border-bottom: 1px solid #222;
+  min-height: 20px;
+  padding: 0 4px;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ppe-sheet__value--short {
+  flex: .55;
+}
+
+.ppe-sheet__declaration {
+  margin: 12px 14px 16px;
+  text-align: justify;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ppe-sheet__table {
+  width: calc(100% - 24px);
+  margin: 0 12px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.ppe-sheet__table th,
+.ppe-sheet__table td {
+  border: 1px solid #222;
+  text-align: center;
+  padding: 3px 4px;
+  height: 33px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.ppe-sheet__table th {
+  font-weight: 400;
+  text-transform: uppercase;
+  height: 28px;
+  font-size: 11px;
+  padding: 3px 2px;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.ppe-sheet__table td small {
+  font-size: 10px;
+  color: #444;
+}
+
+.ppe-sheet__table td img {
+  max-height: 26px;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.ppe-sheet__codes {
+  margin: 14px 14px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.ppe-sheet__signatures {
+  display: flex;
+  justify-content: space-between;
+  gap: 36px;
+  margin: 38px 30px 10px;
+}
+
+.ppe-sheet__signatures > div {
+  flex: 1;
+  text-align: center;
+}
+
+.ppe-sheet__signature-line {
+  height: 44px;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.ppe-sheet__signature-line img {
+  max-height: 42px;
+}
+
+.ppe-sheet__signatures b {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.ppe-sheet__signer-name {
+  display: block;
+  font-size: 11px;
+  color: #444;
+  margin-top: 2px;
+}
+
+.ppe-sheet__pending-note {
+  display: block;
+  color: #a33;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.ppe-sheet__form-code {
+  margin: 4px 10px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ---------- Print ---------- */
+#print-area {
+  display: none;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  #login-gate,
+  #onboarding-guide,
+  #toast-region {
+    display: none !important;
+  }
+
+  html.is-printing-sheet body > *:not(#print-area) {
+    display: none !important;
+  }
+
+  html.is-printing-sheet #print-area {
+    display: block;
+  }
+
+  html.is-printing-sheet body {
+    background: #fff !important;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet {
+    padding: 0;
+    width: 100%;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__table td {
+    height: 28px;
+    line-height: 1.2;
+    padding: 2px 3px;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__table th {
+    height: 24px;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__fields {
+    padding-top: 10px;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__field-row {
+    margin-bottom: 8px;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__declaration {
+    margin: 8px 14px 10px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__codes {
+    margin-top: 10px;
+  }
+
+  html.is-printing-sheet #print-area .ppe-sheet__signatures {
+    margin: 22px 30px 6px;
+  }
+
+  html.is-printing-sheet #print-area tr,
+  html.is-printing-sheet #print-area .ppe-sheet__header,
+  html.is-printing-sheet #print-area .ppe-sheet__signatures {
+    break-inside: avoid;
+  }
+}

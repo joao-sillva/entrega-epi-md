@@ -1,0 +1,62 @@
+/* Icons are SVG files in assets/icons, painted with the current text color through a mask. */
+.icon {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.icon--employees {
+  --icon: url(../assets/icons/employees.svg);
+}
+
+.icon--employees-nav {
+  --icon: url(../assets/icons/employees-nav.svg);
+}
+
+.icon--roles {
+  --icon: url(../assets/icons/roles.svg);
+}
+
+.icon--box {
+  --icon: url(../assets/icons/box.svg);
+}
+
+.icon--pen {
+  --icon: url(../assets/icons/pen.svg);
+}
+
+.icon--eye {
+  --icon: url(../assets/icons/eye.svg);
+}
+
+.icon--chevron {
+  --icon: url(../assets/icons/chevron.svg);
+}
+
+.icon--chart-bars {
+  --icon: url(../assets/icons/chart-bars.svg);
+}
+
+.icon--chart {
+  --icon: url(../assets/icons/chart.svg);
+}
+
+.icon--plus {
+  --icon: url(../assets/icons/plus.svg);
+}
+
+.icon--sliders {
+  --icon: url(../assets/icons/sliders.svg);
+}
+
+.icon--arrow-right {
+  --icon: url(../assets/icons/arrow-right.svg);
+}
+
+.icon--search {
+  --icon: url(../assets/icons/search.svg);
+}

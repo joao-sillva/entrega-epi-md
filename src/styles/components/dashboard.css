@@ -1,0 +1,245 @@
+/* Dashboard: stat cards, bars, outflow filters and history table. */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.stat-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--color-danger-soft);
+  color: var(--color-accent);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.stat-card__icon .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-card:nth-child(4) .stat-card__icon {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.stat-card b {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+
+.stat-card span {
+  font-size: 12.5px;
+  color: var(--color-muted);
+}
+
+.card__title {
+  margin-bottom: 6px;
+}
+
+.card__empty-text {
+  margin-top: 10px;
+}
+
+.role-card__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  text-align: left;
+}
+
+.role-card__toggle .card__title {
+  margin: 0;
+  flex: 1;
+}
+
+.role-card__chevron {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-accent-soft);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.role-card__chevron .icon {
+  width: 18px;
+  height: 18px;
+  transition: transform .18s;
+  background-color: var(--color-text);
+}
+
+.role-card.is-open .role-card__chevron .icon {
+  transform: rotate(90deg);
+}
+
+.role-card__count {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.role-card__body {
+  margin-top: 8px;
+}
+
+.bar-row {
+  margin: 12px 0;
+}
+
+.bar-row__header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin-bottom: 7px;
+}
+
+.bar-row__track {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--color-accent-soft);
+  overflow: hidden;
+}
+
+.bar-row__fill {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 99px;
+}
+
+.outflow-section__eyebrow {
+  margin-top: 40px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+
+.filter-bar label {
+  margin: 0 0 6px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  width: auto;
+  height: 44px;
+}
+
+.filter-bar select[data-wide] {
+  max-width: 260px;
+}
+
+.filter-bar button {
+  height: 44px;
+}
+
+.filter-bar__more {
+  position: relative;
+}
+
+.filter-bar__more .more-options-button {
+  width: 44px;
+  padding: 0;
+  font-size: 24px;
+  color: var(--color-text);
+  background: var(--color-accent-soft);
+  border-color: transparent;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.filter-bar__more .dropdown-menu {
+  top: 50px;
+  right: auto;
+  left: 0;
+  min-width: 180px;
+}
+
+.result-count {
+  color: var(--color-muted);
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.card--table {
+  padding: 8px 14px;
+}
+
+.table-scroll {
+  max-height: 480px;
+  overflow: auto;
+}
+
+.card--table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card--table th,
+.card--table td {
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  padding: 11px 12px;
+  font-size: 13px;
+}
+
+.card--table th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  color: var(--color-muted);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.muted-text {
+  color: var(--color-muted);
+}
+
+.view-photo-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.view-photo-button .icon {
+  width: 18px;
+  height: 18px;
+}

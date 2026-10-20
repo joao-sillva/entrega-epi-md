@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Entrega de EPI · Moura Dubeux</title>
+  <meta name="description" content="Controle de entrega de EPI com ficha, assinatura e histórico.">
+  <meta name="theme-color" content="#ac1a24">
+  <link rel="icon" href="src/assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+  <noscript>
+    <p class="noscript-message">Este sistema precisa do JavaScript ativado no navegador.</p>
+  </noscript>
+
+  <header class="app-header">
+    <div class="app-header__brand">
+      <img src="src/assets/logo.svg" alt="Moura Dubeux">
+    </div>
+
+    <nav class="main-nav" aria-label="Seções do sistema">
+      <button type="button" id="nav-employees-button" class="main-nav__link is-active" data-action="show-view" data-view="employees">
+        <span class="icon icon--employees-nav" aria-hidden="true"></span>
+        Funcionários
+      </button>
+      <button type="button" id="nav-dashboard-button" class="main-nav__link" data-action="show-view" data-view="dashboard">
+        <span class="icon icon--chart-bars" aria-hidden="true"></span>
+        Dashboard
+      </button>
+    </nav>
+
+    <div class="app-header__actions">
+      <button type="button" class="button button--primary add-employee-button" title="Cadastrar funcionário" aria-label="Cadastrar funcionário" data-action="open-employee-dialog">
+        <span class="icon icon--plus" aria-hidden="true"></span>
+        <span>Cadastrar funcionário</span>
+      </button>
+      <button type="button" class="icon-button" title="Configuração" aria-label="Configuração" data-action="open-settings-dialog">
+        <span class="icon icon--sliders" aria-hidden="true"></span>
+      </button>
+      <button type="button" id="profile-button" class="profile-button" hidden title="Meu perfil" data-action="open-profile-dialog">
+        <span id="profile-initials"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-content">
+    <section id="employees-view">
+      <header class="page-header">
+        <p class="eyebrow">Moura Dubeux · Controle de EPI</p>
+        <h1>Funcionários</h1>
+        <p class="page-subtitle" id="employees-summary"></p>
+      </header>
+      <div class="list-toolbar">
+        <div class="search-field">
+          <span class="icon icon--search" aria-hidden="true"></span>
+          <input type="search" id="employee-search-input" placeholder="Buscar por nome, função, obra ou matrícula" autocomplete="off" aria-label="Buscar funcionário">
+        </div>
+      </div>
+      <div class="employee-grid" id="employee-grid"></div>
+      <nav class="pager" id="pager" aria-label="Paginação"></nav>
+    </section>
+    <section id="dashboard-view" hidden></section>
+  </main>
+
+  <dialog id="employee-dialog">
+    <h2 id="employee-dialog-title">Cadastrar funcionário</h2>
+    <label for="employee-name-input">Nome</label>
+    <input id="employee-name-input">
+    <label for="employee-role-input">Função</label>
+    <input id="employee-role-input">
+    <label for="employee-work-site-input">Obra</label>
+    <input id="employee-work-site-input">
+    <label for="employee-registration-input">Matrícula</label>
+    <input id="employee-registration-input">
+    <p id="employee-error" class="form-error"></p>
+    <div class="dialog-actions">
+      <button type="button" data-action="close-dialog" data-dialog-id="employee-dialog">Cancelar</button>
+      <button type="button" class="button--primary" data-action="save-employee">Salvar</button>
+    </div>
+  </dialog>
+  <dialog id="delivery-dialog">
+    <h2 id="delivery-dialog-title">Cadastrar EPI</h2>
+
+    <label for="ca-number-input">CA (digite o número)</label>
+    <input id="ca-number-input" inputmode="numeric">
+    <p id="ca-message" class="form-hint"></p>
+
+    <label for="ppe-name-input">Nome do EPI</label>
+    <input id="ppe-name-input">
+
+    <div class="delivery-fields">
+      <div>
+        <label for="quantity-input">Quantidade</label>
+        <input id="quantity-input" type="number" min="1" value="1">
+      </div>
+      <div>
+        <label for="returned-quantity-input" title="Quantidade devolvida do EPI anterior; fica registrada na linha dele">Devolvido</label>
+        <input id="returned-quantity-input" type="number" min="0" value="0" title="Quantidade devolvida do EPI anterior; fica registrada na linha dele">
+      </div>
+      <div class="delivery-fields__fill-code">
+        <label for="fill-code-select">Código de preenchimento</label>
+        <select id="fill-code-select">
+          <option value="01">01 – Primeira entrega</option>
+          <option value="02">02 – Substituição por desgaste normal</option>
+          <option value="03">03 – Substituição por extravio</option>
+          <option value="04">04 – Substituição por desgaste anormal</option>
+          <option value="05">05 – Outros</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="swap-notice" class="swap-notice" hidden></div>
+    <p id="add-item-error" class="form-error"></p>
+    <button type="button" class="button--soft add-item-button" data-action="add-delivery-item">+ Adicionar à lista</button>
+
+    <label for="receipt-signature-canvas">Assinatura de recebimento do funcionário (obrigatória; vale para todos os EPIs da lista)</label>
+    <canvas id="receipt-signature-canvas"></canvas>
+    <p id="receipt-signature-error" class="form-error"></p>
+
+    <label>Foto do colaborador (obrigatória; sai com data e hora)</label>
+    <div class="photo-capture">
+      <video id="photo-video" playsinline muted autoplay hidden></video>
+      <img id="photo-preview" alt="Foto do colaborador" hidden>
+      <div class="photo-capture__placeholder" id="photo-placeholder">Nenhuma foto tirada</div>
+    </div>
+    <div class="photo-capture__buttons">
+      <button type="button" id="photo-open-camera-button" data-action="open-camera">Abrir câmera</button>
+      <button type="button" id="photo-snap-button" class="button--soft" hidden data-action="take-photo">Tirar foto</button>
+      <button type="button" id="photo-retake-button" hidden data-action="retake-photo">Refazer</button>
+      <button type="button" id="photo-device-button" data-action="choose-photo-file">Foto pelo aparelho</button>
+      <input type="file" id="photo-file-input" accept="image/*" capture="user" hidden>
+    </div>
+    <p id="photo-message" class="form-error"></p>
+
+    <div id="pending-items" class="pending-items"></div>
+
+    <div class="dialog-actions dialog-actions--sticky">
+      <button type="button" data-action="clear-receipt-signature">Limpar assinatura</button>
+      <button type="button" data-action="close-dialog" data-dialog-id="delivery-dialog">Cancelar</button>
+      <button type="button" class="button--primary" data-action="save-delivery">Salvar entrega</button>
+    </div>
+  </dialog>
+  <dialog id="photo-viewer-dialog">
+    <h2>Foto da entrega</h2>
+    <img id="photo-viewer-image" class="photo-viewer__image" alt="Foto do colaborador">
+    <p id="photo-viewer-caption" class="dialog-text"></p>
+    <div class="dialog-actions">
+      <button type="button" class="button--primary" data-action="close-dialog" data-dialog-id="photo-viewer-dialog">Fechar</button>
+    </div>
+  </dialog>
+  <dialog id="sheet-dialog">
+    <div id="sheet-scaler" class="sheet-scaler">
+      <div class="ppe-sheet sheet-scroll" id="sheet-body"></div>
+    </div>
+    <p id="sheet-message" class="form-error"></p>
+    <div class="dialog-actions">
+      <button type="button" data-action="export-sheet-pdf">Exportar PDF</button>
+      <button type="button" data-action="print-sheet">Imprimir</button>
+      <button type="button" class="button--primary" data-action="close-dialog" data-dialog-id="sheet-dialog">Fechar</button>
+    </div>
+  </dialog>
+  <dialog id="signature-dialog">
+    <h2 id="signature-dialog-title">Assinatura do funcionário</h2>
+    <p id="signature-dialog-text" class="dialog-text"></p>
+    <label for="signature-canvas">Assinatura (desenhe no quadro)</label>
+    <canvas id="signature-canvas"></canvas>
+    <p id="signature-error" class="form-error"></p>
+    <div class="dialog-actions">
+      <button type="button" data-action="clear-signature">Limpar</button>
+      <button type="button" data-action="close-dialog" data-dialog-id="signature-dialog">Cancelar</button>
+      <button type="button" class="button--primary" data-action="save-signature">Assinar e continuar</button>
+    </div>
+  </dialog>
+  <dialog id="settings-dialog">
+    <h2>Configuração</h2>
+
+    <p class="dialog-text">Base de dados do CAEPI (Ministério do Trabalho). O sistema já traz a base e preenche o nome do EPI pelo número do CA. Para atualizar, importe o arquivo mais recente.</p>
+    <section class="info-box">
+      <div class="info-box__label">Base atual</div>
+      <div id="caepi-info" class="info-box__value">Nenhuma base importada</div>
+      <div class="button-row">
+        <button type="button" class="button--primary" data-action="choose-caepi-file">Atualizar base do CAEPI</button>
+        <button type="button" id="caepi-restore-default-button" data-action="restore-default-caepi" hidden>Voltar à base padrão</button>
+      </div>
+      <input type="file" id="caepi-file-input" accept=".zip,.csv,.txt,.xlsx,.xls" hidden>
+      <p id="settings-message" class="status-message"></p>
+    </section>
+    <p class="dialog-text dialog-text--small">Como atualizar: baixe a "Base de dados do CAEPI" na página do CAEPI, no site do Ministério do Trabalho, e escolha o arquivo exatamente como baixou (.zip, .csv ou .txt). Não precisa extrair nem editar. A leitura leva alguns segundos e a base atualizada fica salva neste navegador.</p>
+
+    <section class="info-box info-box--spaced">
+      <div class="info-box__label">Backup dos dados</div>
+      <div id="backup-info" class="info-box__value">Nenhum backup feito ainda</div>
+      <div id="storage-info" class="info-box__note"></div>
+      <div class="button-row">
+        <button type="button" class="button--primary" data-action="download-backup">Baixar backup</button>
+        <button type="button" data-action="choose-backup-file">Restaurar backup</button>
+      </div>
+      <input type="file" id="backup-file-input" accept=".json" hidden>
+      <p id="backup-message" class="status-message"></p>
+      <div id="backup-confirmation" class="button-row" hidden>
+        <button type="button" class="button--primary button--danger" data-action="confirm-backup-restore">Substituir dados atuais</button>
+        <button type="button" data-action="cancel-backup-restore">Cancelar</button>
+      </div>
+      <p class="dialog-text dialog-text--small">O backup guarda funcionários, EPIs, assinaturas e históricos. A base do CAEPI não entra no backup.</p>
+    </section>
+
+    <div class="settings-guide-link">
+      <button type="button" data-action="open-guide-from-settings">Ver passo a passo do sistema</button>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="button--primary" data-action="close-dialog" data-dialog-id="settings-dialog">Fechar</button>
+    </div>
+  </dialog>
+  <dialog id="sheet-history-dialog">
+    <h2 id="sheet-history-title">Histórico de fichas</h2>
+    <div id="sheet-history-body"></div>
+    <div class="dialog-actions">
+      <button type="button" class="button--primary" data-action="close-dialog" data-dialog-id="sheet-history-dialog">Fechar</button>
+    </div>
+  </dialog>
+  <dialog id="sheet-full-dialog">
+    <h2 class="dialog-title--danger">Não é possível cadastrar novo EPI</h2>
+    <p id="sheet-full-text" class="dialog-text dialog-text--flush"></p>
+    <div class="dialog-actions">
+      <button type="button" data-action="close-dialog" data-dialog-id="sheet-full-dialog">Cancelar</button>
+      <button type="button" class="button--primary" data-action="start-new-sheet">Criar nova ficha</button>
+    </div>
+  </dialog>
+  <dialog id="profile-dialog">
+    <h2>Meu perfil</h2>
+    <p class="dialog-text dialog-text--tight">Dados da conta de administrador deste acesso. Para trocar o usuário ou a senha, informe a senha atual.</p>
+    <label for="profile-full-name-input">Nome completo</label>
+    <input id="profile-full-name-input" type="text" autocomplete="name" autocapitalize="none">
+    <label for="profile-username-input">Usuário</label>
+    <input id="profile-username-input" type="text" autocomplete="username" autocapitalize="none">
+    <label for="profile-new-password-input">Nova senha (deixe em branco para manter)</label>
+    <input id="profile-new-password-input" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres">
+    <label for="profile-confirm-password-input">Confirmar nova senha</label>
+    <input id="profile-confirm-password-input" type="password" autocomplete="new-password">
+    <label for="profile-current-password-input">Senha atual (necessária para trocar usuário ou senha)</label>
+    <input id="profile-current-password-input" type="password" autocomplete="current-password">
+    <p id="profile-error" class="form-error"></p>
+    <div class="dialog-actions dialog-actions--split">
+      <button type="button" data-action="sign-out">Sair da conta</button>
+      <span class="dialog-actions__group">
+        <button type="button" data-action="close-dialog" data-dialog-id="profile-dialog">Cancelar</button>
+        <button type="button" class="button--primary" data-action="save-profile">Salvar</button>
+      </span>
+    </div>
+  </dialog>
+  <dialog id="delete-dialog">
+    <h2 id="delete-dialog-title">Excluir funcionário</h2>
+    <p id="delete-dialog-text" class="dialog-text dialog-text--flush"></p>
+    <div class="dialog-actions">
+      <button type="button" data-action="close-dialog" data-dialog-id="delete-dialog">Cancelar</button>
+      <button type="button" id="delete-confirm-button" class="button--primary button--danger" data-action="confirm-delete-employee">Excluir</button>
+    </div>
+  </dialog>
+
+  <div id="print-area" aria-hidden="true"></div>
+  <div id="toast-region" aria-live="polite"></div>
+
+  <div id="login-gate" class="login-gate">
+    <aside class="login-showcase">
+      <div class="login-showcase__brand">
+        <img src="src/assets/logo.svg" alt="Moura Dubeux">
+        <div>
+          <b>Controle de EPI</b>
+          <span>Painel de Segurança do Trabalho</span>
+        </div>
+      </div>
+      <div class="login-showcase__stage">
+        <img class="login-showcase__wave" src="src/assets/images/login-wave.svg" alt="">
+        <div class="login-showcase__scene">
+          <div class="feature-bubble feature-bubble--top">
+            <i><span class="icon icon--employees" aria-hidden="true"></span></i>
+            <span>Cadastre funcionários e fichas de EPI</span>
+          </div>
+          <div class="feature-bubble feature-bubble--left">
+            <i><span class="icon icon--pen" aria-hidden="true"></span></i>
+            <span>Registre entregas com assinatura</span>
+          </div>
+          <img class="login-showcase__hat" src="src/assets/images/login-hat.svg" alt="">
+          <div class="feature-bubble feature-bubble--right">
+            <i><span class="icon icon--chart" aria-hidden="true"></span></i>
+            <span>Acompanhe tudo no dashboard</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="login-panel">
+      <img src="src/assets/logo.svg" class="login-panel__mobile-logo" alt="Moura Dubeux">
+
+      <div id="create-account-section">
+        <h1 id="create-account-title">Crie seu acesso</h1>
+        <p class="page-subtitle" id="create-account-subtitle">Defina um usuário e uma senha para usar o controle de entrega de EPI neste dispositivo.</p>
+        <form id="create-account-form" class="login-form">
+          <div class="login-form__field">
+            <label for="create-full-name-input">Nome completo</label>
+            <div class="underlined-input"><input id="create-full-name-input" type="text" autocomplete="name" autocapitalize="none" placeholder="Seu nome completo"></div>
+          </div>
+          <div class="login-form__field">
+            <label for="create-username-input">Usuário</label>
+            <div class="underlined-input"><input id="create-username-input" type="text" autocomplete="username" autocapitalize="none" placeholder="Escolha um usuário"></div>
+          </div>
+          <div class="login-form__field">
+            <label for="create-password-input">Senha</label>
+            <div class="underlined-input">
+              <input id="create-password-input" type="password" autocomplete="new-password" autocapitalize="none" placeholder="Mínimo de 6 caracteres">
+              <button type="button" class="reveal-password-button" aria-label="Mostrar senha" data-action="toggle-password-visibility" data-input-id="create-password-input"><span class="icon icon--eye" aria-hidden="true"></span></button>
+            </div>
+          </div>
+          <div class="login-form__field">
+            <label for="create-password-confirm-input">Confirmar senha</label>
+            <div class="underlined-input">
+              <input id="create-password-confirm-input" type="password" autocomplete="new-password" autocapitalize="none" placeholder="Repita a senha">
+              <button type="button" class="reveal-password-button" aria-label="Mostrar senha" data-action="toggle-password-visibility" data-input-id="create-password-confirm-input"><span class="icon icon--eye" aria-hidden="true"></span></button>
+            </div>
+          </div>
+          <p class="login-form__error" id="create-account-error"></p>
+          <button class="button--primary login-button" type="submit"><span>Criar conta e entrar</span><span class="icon icon--arrow-right" aria-hidden="true"></span></button>
+        </form>
+        <div class="login-panel__switch" id="switch-to-login">
+          <p>Já tem uma conta?</p>
+          <button type="button" class="login-button login-button--outline" data-action="show-login-panel"><span>Entrar</span><span class="icon icon--arrow-right" aria-hidden="true"></span></button>
+        </div>
+      </div>
+
+      <div id="login-section" hidden>
+        <h1>Acesse sua conta</h1>
+        <p class="page-subtitle">Informe seu usuário e senha para entrar</p>
+        <form id="login-form" class="login-form">
+          <div class="login-form__field">
+            <label for="login-username-input">Usuário</label>
+            <div class="underlined-input"><input id="login-username-input" type="text" autocomplete="username" autocapitalize="none" placeholder="Seu usuário"></div>
+          </div>
+          <div class="login-form__field">
+            <label for="login-password-input">Senha</label>
+            <div class="underlined-input">
+              <input id="login-password-input" type="password" autocomplete="current-password" autocapitalize="none" placeholder="Sua senha de acesso">
+              <button type="button" class="reveal-password-button" aria-label="Mostrar senha" data-action="toggle-password-visibility" data-input-id="login-password-input"><span class="icon icon--eye" aria-hidden="true"></span></button>
+            </div>
+          </div>
+          <p class="login-form__error" id="login-error"></p>
+          <button class="button--primary login-button" type="submit"><span>Acessar</span><span class="icon icon--arrow-right" aria-hidden="true"></span></button>
+        </form>
+        <p class="login-panel__forgot"><button type="button" class="link-button" data-action="toggle-forgot-password">Esqueci minha senha</button></p>
+        <div class="forgot-password-notice" id="forgot-password-panel" hidden>
+          O acesso fica guardado só neste navegador, então a senha não pode ser recuperada. Digite seu usuário no campo acima e redefina: o acesso desse usuário é apagado, mas os dados dos funcionários e das fichas continuam. Em seguida você cria a conta de novo.<br>
+          <button type="button" data-action="reset-account-access">Redefinir acesso</button>
+        </div>
+        <div class="login-panel__switch">
+          <p>Ainda não tem uma conta?</p>
+          <button type="button" class="login-button login-button--outline" data-action="show-create-account-panel"><span>Cadastrar</span><span class="icon icon--arrow-right" aria-hidden="true"></span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div id="onboarding-guide" class="onboarding-guide" hidden>
+    <div class="onboarding-guide__card">
+      <img src="src/assets/logo.svg" class="onboarding-guide__logo" alt="Moura Dubeux">
+      <p class="eyebrow">Passo a passo</p>
+      <h1 id="guide-title">Bem-vindo(a)</h1>
+      <p class="page-subtitle">Antes de começar, veja como o sistema de entrega de EPI funciona.</p>
+      <ol class="guide-steps">
+        <li>
+          <div>
+            <b>Crie seu acesso e entre</b>
+            <span>No primeiro acesso, informe nome completo, usuário e senha (mínimo de 6 caracteres) e clique em “Criar conta e entrar”. Nas próximas vezes, entre com o mesmo usuário e senha. Outra pessoa pode criar a própria conta pelo botão “Cadastrar” na tela de entrada. Se esquecer a senha, use “Esqueci minha senha”: o acesso é redefinido e os dados continuam.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-1.webp" alt="Tela de login no primeiro acesso, com nome completo, usuário e senha preenchidos e o botão Criar conta e entrar em destaque" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Cadastre o funcionário</b>
+            <span>Clique em “Cadastrar funcionário” e informe nome, função, obra e matrícula. Cada funcionário ganha um card com a sua ficha de EPI.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-2.webp" alt="Janela Cadastrar funcionário com nome, função, obra e matrícula preenchidos e o botão Salvar em destaque" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Colha as assinaturas da ficha</b>
+            <span>Toda ficha nova começa pela assinatura do técnico de segurança, cujo nome vem do perfil da conta. Só depois o funcionário assina. Cards com “Assinatura pendente” têm o botão “Assinar”, e sem as duas assinaturas o EPI não pode ser entregue.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-3.webp" alt="Card de funcionário com o aviso de assinatura do técnico pendente e o botão Assinar em destaque" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Registre a entrega de EPI</b>
+            <span>Em “Cadastrar EPI”, digite o número do CA (o nome do EPI é preenchido sozinho quando o CA é reconhecido), informe a quantidade e o código (01 primeira entrega, 02 a 05 substituições ou outros) e clique em “+ Adicionar à lista”. Repita para cada EPI da entrega. Se o funcionário já recebeu o mesmo EPI, o sistema reconhece a troca, preenche sozinho o código 02 e registra a devolução na linha do EPI anterior (use o código 03 em caso de extravio).</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-4.webp" alt="Janela Cadastrar EPI com a troca detectada: código 02 e devolução preenchidos automaticamente e o botão Adicionar à lista em destaque" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Colha a assinatura e a foto do recebimento</b>
+            <span>O funcionário assina uma única vez, e a assinatura vale para todos os EPIs da lista. Em seguida o sistema registra a foto do colaborador, com data e hora, pela câmera ou por “Foto pelo aparelho”. Depois clique em “Salvar entrega”.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-5.webp" alt="Campo de assinatura de recebimento, foto do colaborador, lista de EPIs da entrega e o botão Salvar entrega em destaque" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Consulte e imprima a ficha</b>
+            <span>“Visualizar ficha de EPI” abre a ficha no modelo, com opção de imprimir ou exportar em PDF. Cada ficha tem 13 linhas, como no formulário em papel; quando enche, o sistema pede uma nova ficha e a anterior fica em “Histórico de fichas”, no menu ⋯ do card.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-6.webp" alt="Ficha de distribuição de E.P.I. no modelo da Moura Dubeux, com os dados do funcionário, a declaração e a tabela dos EPIs entregues" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Acompanhe no Dashboard</b>
+            <span>Veja funcionários por função, assinaturas pendentes e o histórico de saídas de EPI, com filtro por colaborador, EPI, mês ou período. No botão ⋯ ao lado dos filtros, baixe o relatório de saída em Excel ou PDF e veja a foto de cada entrega no ícone de olho.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-7.webp" alt="Dashboard com o total de funcionários, funções, EPIs entregues e assinaturas pendentes, e as barras por função" loading="lazy"></div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <b>Configure e proteja os dados</b>
+            <span>Em Configuração, veja a base do CAEPI que já vem no sistema (atualize quando quiser) e baixe um backup com frequência.</span>
+            <div class="guide-screenshot"><img src="src/assets/guide/step-8.webp" alt="Janela de Configuração com a base do CAEPI que já vem no sistema e o backup dos dados" loading="lazy"></div>
+          </div>
+        </li>
+      </ol>
+      <div class="guide-warning">
+        <b>Regras importantes</b>
+        <ul>
+          <li>A entrega de EPI exige a assinatura do técnico de segurança, a do funcionário e a foto do colaborador; sem elas nada é registrado.</li>
+          <li>Funcionário que já recebeu EPI não pode ser excluído: a ficha é o registro da entrega.</li>
+          <li>Os dados ficam salvos neste navegador. Faça backup e não limpe os dados do navegador.</li>
+          <li>Usuário e senha ficam guardados só neste navegador, e todas as contas criadas nele enxergam os mesmos funcionários e fichas. Para trocar de pessoa, use o botão de saída no topo da tela.</li>
+          <li>Confira sempre o CA: o sistema avisa quando ele está vencido.</li>
+        </ul>
+      </div>
+      <div class="onboarding-guide__footer">
+        <p id="guide-note">Ao continuar, você confirma que leu e entendeu as orientações acima.</p>
+        <button id="guide-confirm-button" class="button--primary" data-action="confirm-guide">Entendi, começar a usar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+  <script type="module" src="src/scripts/main.js"></script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -255,8 +256,10 @@
   <dialog id="delete-dialog">
     <h2 id="delete-dialog-title">Excluir funcionário</h2>
     <p id="delete-dialog-text" class="dialog-text dialog-text--flush"></p>
+    <p id="delete-dialog-message" class="status-message" aria-live="polite"></p>
     <div class="dialog-actions">
       <button type="button" data-action="close-dialog" data-dialog-id="delete-dialog">Cancelar</button>
+      <button type="button" id="delete-download-button" class="button--soft" data-action="download-sheets-before-delete" hidden>Baixar ficha (PDF)</button>
       <button type="button" id="delete-confirm-button" class="button--primary button--danger" data-action="confirm-delete-employee">Excluir</button>
     </div>
   </dialog>
@@ -429,7 +432,7 @@
         <b>Regras importantes</b>
         <ul>
           <li>A entrega de EPI exige a assinatura do técnico de segurança, a do funcionário e a foto do colaborador; sem elas nada é registrado.</li>
-          <li>Funcionário que já recebeu EPI não pode ser excluído: a ficha é o registro da entrega.</li>
+          <li>Funcionário que já recebeu EPI só pode ser excluído depois de baixar a ficha em PDF: a ficha é o registro da entrega. Guarde o arquivo.</li>
           <li>Os dados ficam salvos neste navegador. Faça backup e não limpe os dados do navegador.</li>
           <li>Usuário e senha ficam guardados só neste navegador, e todas as contas criadas nele enxergam os mesmos funcionários e fichas. Para trocar de pessoa, use o botão de saída no topo da tela.</li>
           <li>Confira sempre o CA: o sistema avisa quando ele está vencido.</li>
@@ -448,3 +451,5 @@
   <script type="module" src="src/scripts/main.js"></script>
 </body>
 </html>
+
+</body></html>

@@ -37,7 +37,7 @@ import {
   signArchivedSheet,
   signCurrentSheet,
 } from './features/delivery/signature-dialog.js';
-import { askToDeleteEmployee, confirmDeleteEmployee } from './features/employees/delete-employee-dialog.js';
+import { askToDeleteEmployee, confirmDeleteEmployee, downloadSheetsBeforeDelete } from './features/employees/delete-employee-dialog.js';
 import { openEditEmployeeDialog, openNewEmployeeDialog, saveEmployee } from './features/employees/employee-dialog.js';
 import { bindEmployeeListEvents, goToPage, renderEmployeeList } from './features/employees/employee-list.js';
 import { bindSheetDialogEvents, exportSheetPdf, openSheet, printSheet } from './features/sheet/sheet-dialog.js';
@@ -112,6 +112,7 @@ function registerActions() {
     'save-employee': saveEmployee,
     'ask-delete-employee': ({ employeeIndex }) => askToDeleteEmployee(toIndex(employeeIndex)),
     'confirm-delete-employee': confirmDeleteEmployee,
+    'download-sheets-before-delete': downloadSheetsBeforeDelete,
     'go-to-page': ({ page }) => goToPage(toIndex(page)),
 
     // Delivery

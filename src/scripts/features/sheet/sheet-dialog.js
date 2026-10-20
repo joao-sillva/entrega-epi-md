@@ -4,6 +4,7 @@ import { byId, closeDialog, showDialog } from '../../utils/dom.js';
 import { saveFile } from '../../utils/file-download.js';
 import { removeAccents } from '../../utils/text.js';
 import { renderSheetMarkup } from './sheet-markup.js';
+import { addSheetPage, createSheetPdf } from './sheet-pdf.js';
 
 let sheetFileName = 'ficha-epi';
 
@@ -48,23 +49,12 @@ export async function exportSheetPdf() {
     const body = byId('sheet-body');
     const previousTransform = body.style.transform;
     body.style.transform = '';
-    let canvas;
+    const pdf = createSheetPdf();
     try {
-      canvas = await html2canvas(body, { scale: 2, backgroundColor: '#ffffff' });
+      await addSheetPage(pdf, body, true);
     } finally {
       body.style.transform = previousTransform;
     }
-
-    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
-    const maxWidth = 190;
-    const maxHeight = 277;
-    let imageWidth = maxWidth;
-    let imageHeight = (canvas.height * maxWidth) / canvas.width;
-    if (imageHeight > maxHeight) {
-      imageWidth = (maxWidth * maxHeight) / imageHeight;
-      imageHeight = maxHeight;
-    }
-    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (210 - imageWidth) / 2, 10, imageWidth, imageHeight);
     await saveFile(`${sheetFileName}.pdf`, pdf.output('blob'), FILE_MIME_TYPES.pdf);
   } catch (error) {
     message.textContent = 'Não foi possível gerar o PDF. Use Imprimir e escolha "Salvar como PDF".';
